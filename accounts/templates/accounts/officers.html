@@ -1,0 +1,114 @@
+{% extends "accounts/base.html" %}
+{% block breadcrumb %}Officers & Departments{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-officers">
+
+    <div class="section-hdr">
+        <div class="section-title">JKUAT Departments & Faculties</div>
+        
+    </div>
+
+    <!-- Departments Section -->
+    <h3 class="section-subheading">Departments</h3>
+    <div class="departments-grid">
+        <div class="dept-card">
+            <div class="dept-icon"><i class="fa-solid fa-laptop-code"></i></div>
+            <h4 class="dept-name">School of Computing & Information Technology</h4>
+        </div>
+        <div class="dept-card">
+            <div class="dept-icon"><i class="fa-solid fa-gear"></i></div>
+            <h4 class="dept-name">School of Engineering</h4>
+        </div>
+        <div class="dept-card">
+            <div class="dept-icon"><i class="fa-solid fa-seedling"></i></div>
+            <h4 class="dept-name">School of Agriculture</h4>
+        </div>
+        <div class="dept-card">
+            <div class="dept-icon"><i class="fa-solid fa-briefcase"></i></div>
+            <h4 class="dept-name">School of Business</h4>
+        </div>
+        <div class="dept-card">
+            <div class="dept-icon"><i class="fa-solid fa-book"></i></div>
+            <h4 class="dept-name">Library & Information Services</h4>
+        </div>
+        <div class="dept-card">
+            <div class="dept-icon"><i class="fa-solid fa-flask"></i></div>
+            <h4 class="dept-name">School of Pure & Applied Sciences</h4>
+        </div>
+    </div>
+
+    <!-- Active Officers Section -->
+    <div class="card" style="margin-top: 50px;">
+        <h3 style="margin-bottom: 20px; color: var(--green);">
+            <i class="fa-solid fa-user-tie"></i> Active Officers
+        </h3>
+        
+        <div class="officers-list">
+            {% for officer in officers %}
+            <div class="officer-row">
+                <div class="officer-info">
+                    <strong>{{ officer.get_full_name|default:officer.username }}</strong>
+                    <small>{{ officer.profile.department|default:"No Department Assigned" }}</small>
+                </div>
+                
+                <div class="officer-actions">
+                    <span class="badge-pill 
+                        {% if officer.profile.status == 'active' %}pill-green
+                        {% elif officer.profile.status == 'inactive' %}pill-red
+                        {% else %}pill-gold{% endif %}">
+                        {{ officer.profile.get_status_display|default:"Active" }}
+                    </span>
+                    
+                   
+                </div>
+            </div>
+            {% empty %}
+            <p style="padding: 40px; text-align: center; color: var(--text-muted);">
+                No officers found.
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Officer Details Modal -->
+<div id="officerModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeOfficerModal()">&times;</span>
+        <h3 id="modal-title">Officer Details</h3>
+        <div class="modal-body" id="officer-modal-body">
+            <!-- Content loaded dynamically -->
+        </div>
+    </div>
+</div>
+
+
+{% block extra_js %}
+<script>
+function showOfficerDetails(officerId) {
+    const modal = document.getElementById('officerModal');
+    const body = document.getElementById('officer-modal-body');
+    
+    body.innerHTML = `<div style="text-align:center; padding:50px;">
+                        <i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>
+                        Loading officer details...
+                      </div>`;
+    modal.style.display = "block";
+
+    fetch(`/accounts/dean/officers/${officerId}/`)
+        .then(response => response.text())
+        .then(html => {
+            body.innerHTML = html;
+        })
+        .catch(() => {
+            body.innerHTML = `<p style="color:red;">Failed to load details.</p>`;
+        });
+}
+
+function closeOfficerModal() {
+    document.getElementById('officerModal').style.display = "none";
+}
+</script>
+{% endblock %}
+{% endblock %}

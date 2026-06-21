@@ -1,0 +1,86 @@
+{% extends "accounts/base.html" %}
+{% block breadcrumb %}AI Insights{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-insights">
+
+    <div class="section-hdr">
+        <div class="section-title">AI Insights</div>
+        <p class="section-subtitle">Intelligent predictions and recommendations powered by system data</p>
+    </div>
+
+    <div class="ai-insights-container">
+
+        <!-- Header Card -->
+        <div class="card ai-header">
+            <h3><i class="fa-solid fa-brain"></i> AI Predictions & Recommendations</h3>
+            <small>Last analyzed: {{ last_updated|date:"d M, Y h:i A"|default:"Just now" }}</small>
+        </div>
+
+        {% if insights %}
+            {% for insight in insights %}
+            <div class="insight-card severity-{{ insight.severity|default:'medium' }}">
+                <div class="insight-icon">
+                    {% if insight.severity == 'high' %}
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    {% elif insight.severity == 'medium' %}
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    {% else %}
+                        <i class="fa-solid fa-circle-check"></i>
+                    {% endif %}
+                </div>
+                <div class="insight-content">
+                    <h4>{{ insight.title }}</h4>
+                    <p>{{ insight.description }}</p>
+                    {% if insight.recommendation %}
+                        <div class="recommendation">
+                            <strong>Recommendation:</strong> {{ insight.recommendation }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="insight-meta">
+                    <span class="severity-badge {{ insight.severity }}">
+                        {{ insight.severity|title }}
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Fallback Static Insights -->
+            <div class="insight-card severity-high">
+                <div class="insight-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="insight-content">
+                    <h4>Library Wi-Fi is a recurring issue</h4>
+                    <p>14 complaints this week — 68% higher than average.</p>
+                </div>
+                <div class="insight-meta">
+                    <span class="severity-badge high">High</span>
+                </div>
+            </div>
+
+            <div class="insight-card severity-medium">
+                <div class="insight-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                <div class="insight-content">
+                    <h4>Finance portal delays detected</h4>
+                    <p>Average resolution time increased by 2.1 days.</p>
+                </div>
+                <div class="insight-meta">
+                    <span class="severity-badge medium">Medium</span>
+                </div>
+            </div>
+
+            <div class="insight-card severity-low">
+                <div class="insight-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="insight-content">
+                    <h4>Engineering School performing well</h4>
+                    <p>Only 3 open complaints this month.</p>
+                </div>
+                <div class="insight-meta">
+                    <span class="severity-badge low">Low</span>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

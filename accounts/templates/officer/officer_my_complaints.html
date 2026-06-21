@@ -1,0 +1,62 @@
+{% extends "officer/base.html" %}
+{% block breadcrumb %}My Complaints{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-complaints">
+    <div class="section-hdr">
+        <div class="section-title">My Complaints</div>
+        <p class="section-subtitle">{{ total_complaints }} Assigned • Filter below</p>
+    </div>
+
+    <!-- Filters -->
+    <div style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{% url 'accounts:officer_my_complaints' %}" 
+           class="btn-sm btn-outline {% if current_filter == 'all' %}active{% endif %}">
+            All
+        </a>
+        <a href="?status=open" 
+           class="btn-sm btn-outline {% if current_filter == 'open' %}active{% endif %}">
+            Open
+        </a>
+        <a href="?status=in_progress" 
+           class="btn-sm btn-outline {% if current_filter == 'in_progress' %}active{% endif %}">
+            In Progress
+        </a>
+        <a href="?status=resolved" 
+           class="btn-sm btn-outline {% if current_filter == 'resolved' %}active{% endif %}">
+            Resolved
+        </a>
+    </div>
+
+    <div class="doc-grid">
+        {% for complaint in complaints %}
+        <div class="doc-card">
+            <div class="doc-icon" style="background:
+                {% if complaint.status == 'resolved' %}var(--green-dim)
+                {% elif complaint.status == 'in_progress' %}var(--gold-dim)
+                {% else %}var(--gold-dim){% endif %}">
+                <i class="fa-solid fa-file-circle-exclamation"></i>
+            </div>
+            <div>
+                <div class="doc-name">{{ complaint.complaint_id }} — {{ complaint.title }}</div>
+                <div class="doc-size">{{ complaint.get_category_display }} • {{ complaint.date_submitted|timesince }} ago</div>
+                <span class="badge-pill
+                    {% if complaint.status == 'resolved' %}pill-green
+                    {% elif complaint.status == 'in_progress' %}pill-gold
+                    {% else %}pill-red{% endif %}">
+                    {{ complaint.get_status_display|title }}
+                </span>
+            </div>
+            <div class="doc-actions">
+                <a href="{% url 'accounts:officer_complaint_detail' complaint.complaint_id %}" 
+                   class="doc-btn">Manage</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 80px;">
+            <p>No complaints found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

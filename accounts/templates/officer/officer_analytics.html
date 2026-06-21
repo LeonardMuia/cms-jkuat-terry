@@ -1,0 +1,110 @@
+{% extends "officer/base.html" %}
+
+{% block breadcrumb %}My Analytics & Reports{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-analytics">
+    <div class="section-hdr">
+        <div class="section-title">My Analytics & Reports</div>
+        <p class="section-subtitle">My Performance • Last 30 Days</p>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <h3>Total Assigned</h3>
+            <h2>{{ total_complaints }}</h2>
+        </div>
+        <div class="stat-card">
+            <h3>Resolved</h3>
+            <h2 style="color: var(--green);">{{ resolved }}</h2>
+        </div>
+        <div class="stat-card">
+            <h3>Pending</h3>
+            <h2 style="color: var(--red);">{{ pending }}</h2>
+        </div>
+        <div class="stat-card">
+            <h3>Avg. Resolution Time</h3>
+            <h2>{{ avg_resolution_time }} <small>days</small></h2>
+        </div>
+    </div>
+
+    <div class="analytics-grid">
+        <!-- Complaints Trend -->
+        <div class="card">
+            <h3>Complaints Trend (Last 30 Days)</h3>
+            <div style="height: 340px;">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Complaints by Category -->
+        <div class="card">
+            <h3>Complaints by Category</h3>
+            <div style="height: 340px;">
+                <canvas id="deptChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Insights -->
+    <div class="card" style="margin-top: 30px;">
+        <h3>Key Insights</h3>
+        <div class="insight-list">
+            {% for insight in insights %}
+            <div class="insight-item {{ insight.color }}">
+                <div class="insight-icon">{{ insight.icon }}</div>
+                <div class="insight-text">
+                    <h5>{{ insight.title }}</h5>
+                    <p>{{ insight.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+// Trend Chart
+new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+        labels: {{ trend_labels|safe }},
+        datasets: [{
+            label: 'Complaints Assigned',
+            data: {{ trend_data|safe }},
+            borderColor: '#00d67f',
+            backgroundColor: 'rgba(0, 214, 127, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: { 
+        responsive: true, 
+        maintainAspectRatio: false 
+    }
+});
+
+// Category Bar Chart
+new Chart(document.getElementById('deptChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ dept_labels|safe }},
+        datasets: [{
+            label: 'Number of Complaints',
+            data: {{ dept_data|safe }},
+            backgroundColor: '#00d67f',
+            borderRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+    }
+});
+</script>
+{% endblock %}

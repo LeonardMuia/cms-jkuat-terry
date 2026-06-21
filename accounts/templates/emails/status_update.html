@@ -1,0 +1,26 @@
+{% extends "emails/base_email.html" %}
+
+{% block message %}
+The status of your complaint has been updated by the department officer. You can see the new status and the officer's comments below.
+{% endblock %}
+
+{% block data_card %}
+<div class="info-card">
+    <div class="info-row">
+        <span class="info-label">Complaint ID:</span>
+        <span class="info-value">{{ complaint.complaint_id }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">New Status:</span>
+        <span class="info-value" style="color: #00d67f; font-weight: 700; text-transform: uppercase;">{{ update.get_new_status_display }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Updated By:</span>
+        <span class="info-value">{{ update.updated_by.get_full_name|default:update.updated_by.username }}</span>
+    </div>
+    <div class="info-row" style="margin-top: 15px; border-top: 1px solid #e5e7eb; padding-top: 10px;">
+        <span class="info-label">Officer Comment:</span><br>
+        <div style="font-size: 14px; color: #4b5563; margin-top: 5px;">{{ update.comment|default:"No additional comments provided." }}</div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "clients/base.html" %}
+
+{% block breadcrumb %}Track & Updates{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-track">
+    
+    <div class="section-hdr">
+        <div class="section-title">Track & Real-time Updates</div>
+    </div>
+
+    <div class="card">
+        <div class="clearance-timeline">
+            {% for update in updates %}
+            <div class="ct-step">
+                <div class="ct-dot 
+                    {% if update.new_status == 'resolved' %}done
+                    {% elif update.new_status == 'in_progress' %}pending
+                    {% else %}locked{% endif %}">
+                    <i class="fa-solid fa-{{ update.new_status|slice:":1" }}"></i>
+                </div>
+                <div class="ct-body">
+                    <div class="ct-dept">{{ update.new_status|title }}</div>
+                    <div class="ct-meta">{{ update.date|date:"d M Y - H:i" }} by {{ update.updated_by.get_full_name|default:update.updated_by.username }}</div>
+                    {% if update.comment %}
+                    <p style="margin-top:8px; color:var(--txt2);">{{ update.comment }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p style="text-align:center; padding:40px; color:var(--txt2);">No updates available yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

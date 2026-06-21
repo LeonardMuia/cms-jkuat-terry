@@ -1,0 +1,80 @@
+{% extends "officer/base.html" %}
+
+{% block breadcrumb %}Complaint Details{% endblock %}
+
+{% block content %}
+<div class="page-wrap active">
+    <div class="section-hdr">
+        <div class="section-title">Complaint #{{ complaint.complaint_id }}</div>
+        <a href="{% url 'accounts:officer_my_complaints' %}" class="btn-sm btn-outline">← Back to My Complaints</a>
+    </div>
+
+    <div class="card">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 25px;">
+            <div>
+                <h2 style="margin: 0 0 8px 0;">{{ complaint.title }}</h2>
+                <p style="margin: 0; color: var(--txt2);">
+                    <strong>Category:</strong> {{ complaint.get_category_display }}
+                    | <strong>Priority:</strong> {{ complaint.get_priority_display }}
+                </p>
+            </div>
+            <span class="badge-pill
+                {% if complaint.status == 'resolved' %}pill-green
+                {% elif complaint.status == 'in_progress' %}pill-gold
+                {% else %}pill-red{% endif %}">
+                {{ complaint.get_status_display|title }}
+            </span>
+        </div>
+
+        <!-- Description -->
+        <div style="margin-bottom: 30px;">
+            <strong style="color: var(--txt2);">Description:</strong>
+            <p style="margin-top: 10px; line-height: 1.6;">{{ complaint.description }}</p>
+        </div>
+
+        <!-- Status Update Form -->
+        {% if complaint.status != 'closed' %}
+        <div style="background: var(--surf2); padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 15px; color: var(--green);">Update Status</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <div style="display: flex; gap: 15px; align-items: end;">
+                    <div style="flex: 1;">
+                        <label class="form-label">New Status</label>
+                        <select name="status" class="form-input" required>
+                            <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                            <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                            <option value="closed" {% if complaint.status == 'closed' %}selected{% endif %}>Closed</option>
+                        </select>
+                    </div>
+                    <div style="flex: 2;">
+                        <label class="form-label">Comment (Optional)</label>
+                        <input type="text" name="comment" class="form-input"
+                               placeholder="Add a note about this update...">
+                    </div>
+                    <button type="submit" class="btn-sm btn-green" style="padding: 12px 30px;">
+                        Update Status
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% else %}
+        <div style="background: rgba(239, 68, 68, 0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); margin-bottom: 30px; text-align: center;">
+            <p style="color: #fca5a5; font-weight: 600;">
+                <i class="fa-solid fa-lock" style="margin-right: 8px;"></i>
+                This complaint is closed and cannot be updated further.
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Complaint Info -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div><strong>Submitted By:</strong><br> {{ complaint.complainant.get_full_name|default:complaint.complainant.username }}</div>
+            <div><strong>Submitted On:</strong><br> {{ complaint.date_submitted|date:"d M Y - H:i" }}</div>
+            <div><strong>Department:</strong><br> {{ complaint.get_category_display|default:"—" }}</div>
+            <div><strong>Priority:</strong><br> {{ complaint.get_priority_display }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

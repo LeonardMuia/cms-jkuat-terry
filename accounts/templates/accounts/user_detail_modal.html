@@ -1,0 +1,54 @@
+<div class="user-detail-modal">
+    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 25px;">
+        <div style="font-size: 48px; color: var(--primary-green);">
+            👤
+        </div>
+        <div>
+            <h2>{{ user.get_full_name|default:user.username }}</h2>
+            <p style="color: var(--text-muted);">@{{ user.username }}</p>
+        </div>
+    </div>
+
+    <table class="detail-table">
+        <tr>
+            <td><strong>User ID / Reg No:</strong></td>
+            <td>{{ profile.reg_id|default:"—" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Email:</strong></td>
+            <td>{{ user.email|default:"—" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Role:</strong></td>
+            <td>
+                <span class="badge-pill pill-green">
+                    {{ profile.get_role_display|default:"Student" }}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Department:</strong></td>
+            <td>{{ profile.department|default:"—" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Phone Number:</strong></td>
+            <td>{{ profile.phone|default:"—" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Date Joined:</strong></td>
+            <td>{{ user.date_joined|date:"d F, Y" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Last Login:</strong></td>
+            <td>{{ user.last_login|date:"d M, Y h:i A"|default:"Never" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Status:</strong></td>
+            <td><span class="badge-pill pill-green">Active</span></td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 30px; display: flex; gap: 12px; justify-content: flex-end;">
+        <button class="btn-outline" onclick="closeModal()">Close</button>
+    </div>
+</div>

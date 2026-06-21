@@ -1,0 +1,33 @@
+{% extends "accounts/base.html" %}
+
+{% block breadcrumb %}Officer Details{% endblock %}
+
+{% block content %}
+<div class="page-wrap active">
+
+    <div class="section-hdr">
+        <div class="section-title">Officer Profile</div>
+    </div>
+
+    <div class="card" style="padding:20px;">
+
+        <h2>{{ officer.get_full_name }}</h2>
+        <p><strong>Username:</strong> {{ officer.username }}</p>
+        <p><strong>Email:</strong> {{ officer.email }}</p>
+
+        <hr>
+
+        <p><strong>Department:</strong> {{ officer.profile.department.name|default:"Not Assigned" }}</p>
+        <p><strong>Role:</strong> {{ officer.profile.role }}</p>
+
+        <hr>
+
+        <p><strong>Date Joined:</strong> {{ officer.date_joined }}</p>
+        <p><strong>Last Login:</strong> {{ officer.last_login }}</p>
+
+        <a href="{% url 'accounts:admin_officers' %}" class="verify-btn">Back</a>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "accounts/base.html" %}
+{% block breadcrumb %}Users & Roles{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-users">
+
+    <div class="section-hdr">
+        <div class="section-title">Users & Roles</div>
+    </div>
+
+    <div class="card">
+        <table style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background:var(--surf2);">
+                    <th style="text-align:left; padding:12px;">User ID</th>
+                    <th style="text-align:left; padding:12px;">Name</th>
+                    <th style="text-align:left; padding:12px;">Role</th>
+                    <th style="text-align:left; padding:12px;">Department</th>
+                    <th style="text-align:left; padding:12px;">Status</th>
+                    <th style="width:100px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr style="border-bottom:1px solid var(--bd);">
+                    <td style="padding:12px;">{{ user.profile.reg_id|default:user.username }}</td>
+                    <td style="padding:12px;">{{ user.get_full_name|default:user.username }}</td>
+                    <td style="padding:12px;">
+                        <span class="badge-pill pill-green">{{ user.profile.get_role_display|default:"Student" }}</span>
+                    </td>
+                    <td style="padding:12px;">{{ user.profile.department|default:"—" }}</td>
+                    <td style="padding:12px;">
+                        <span class="badge-pill pill-green">Active</span>
+                    </td>
+                    <td style="padding:12px; display: flex; gap: 8px;">
+                        <button class="btn-sm btn-outline" 
+                                onclick="showUserDetails('{{ user.id }}')" title="View Details">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <a href="{% url 'accounts:dean_edit_user' user.id %}" class="btn-sm btn-green" style="text-decoration:none;" title="Edit User">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        {% if user != request.user %}
+                        <button class="btn-sm btn-outline" style="border-color:var(--danger); color:var(--danger);" 
+                                onclick="confirmDeleteUser('{{ user.id }}', '{{ user.username }}')" title="Delete User">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center; padding:60px;">No users found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- User Details Modal -->
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h3 id="modal-title">User Details</h3>
+        <div class="modal-body" id="modal-body">
+            <!-- Content loaded via JavaScript -->
+        </div>
+        </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Show User Details Modal
+function showUserDetails(userId) {
+    const modal = document.getElementById('userModal');
+    const body = document.getElementById('modal-body');
+    
+    body.innerHTML = `
+        <div style="text-align:center; padding:40px;">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+            <p>Loading user details...</p>
+        </div>
+    `;
+    modal.style.display = "block";
+
+    // Fetch user details (you can replace this with real AJAX later)
+    fetch(`/accounts/dean/user/detail/${userId}/`)
+        .then(response => response.text())
+        .then(html => {
+            body.innerHTML = html;
+        })
+        .catch(() => {
+            body.innerHTML = `<p style="color:red;">Failed to load user details.</p>`;
+        });
+}
+
+function closeModal() {
+    document.getElementById('userModal').style.display = "none";
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('userModal');
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+}
+function confirmDeleteUser(userId, username) {
+    if (confirm(`Are you sure you want to permanently delete user "${username}"? This will also delete all their complaints, notifications, and associated records. This action cannot be undone.`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/accounts/dean/user/delete/${userId}/`;
+        
+        const csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = 'csrfmiddlewaretoken';
+        csrf.value = '{{ csrf_token }}';
+        
+        form.appendChild(csrf);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}
+

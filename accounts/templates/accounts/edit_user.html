@@ -1,0 +1,75 @@
+{% extends "accounts/base.html" %}
+{% block breadcrumb %}Edit User{% endblock %}
+
+{% block content %}
+<div class="page-wrap active">
+    <div class="section-hdr">
+        <div class="section-title">Edit User: {{ user_to_edit.username }}</div>
+        <a href="{% url 'accounts:dean_users' %}" class="btn-sm btn-outline" style="text-decoration:none;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Users
+        </a>
+    </div>
+
+    <div class="card" style="max-width: 600px; margin: 0 auto; padding: 30px;">
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-input" value="{{ user_to_edit.username }}" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="full_name" class="form-input" value="{{ profile.full_name }}" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-input" value="{{ user_to_edit.email }}" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label">Registration / Staff ID</label>
+                <input type="text" name="reg_id" class="form-input" value="{{ profile.reg_id|default:'' }}">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label">Phone Number</label>
+                <input type="text" name="phone" class="form-input" value="{{ profile.phone|default:'' }}">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label">Department</label>
+                <select name="department" class="form-input">
+                    <option value="">Select Department</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept.name }}" {% if profile.department == dept.name %}selected{% endif %}>
+                        {{ dept.name }}
+                    </option>
+                    {% endfor %}
+                    <option value="Administration" {% if profile.department == 'Administration' %}selected{% endif %}>Administration</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label class="form-label">Role</label>
+                <select name="role" class="form-input" required>
+                    {% for val, label in role_choices %}
+                    <option value="{{ val }}" {% if profile.role == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <button type="submit" class="btn-sm btn-green" style="flex: 1; padding: 12px;">
+                    <i class="fa-solid fa-save"></i> Save Changes
+                </button>
+                <button type="button" class="btn-sm btn-outline" style="flex: 1;" onclick="history.back()">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

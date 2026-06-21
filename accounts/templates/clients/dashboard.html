@@ -1,0 +1,161 @@
+{% extends "clients/base.html" %}   <!-- Make sure this matches your base template name -->
+
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-dashboard">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div>
+            <div class="wb-title">
+                Welcome back, {{ request.user.get_full_name|default:request.user.username }}! 👋
+            </div>
+            <div class="wb-sub">
+                {{ today_complaints|default:0 }} complaints submitted today *
+            </div>
+            <div class="wb-pill">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                {{ open_complaints|default:0 }} Open • {{ urgent_complaints|default:0 }} Urgent
+            </div>
+        </div>
+        
+        <!-- Animated Progress Ring -->
+        <div class="progress-ring-wrap">
+            <svg class="pr-svg" width="130" height="130" viewBox="0 0 130 130">
+                <circle class="pr-bg" cx="65" cy="65" r="56" stroke-width="8" fill="none"/>
+                <circle class="pr-circle" 
+                        id="mainRing"
+                        cx="65" 
+                        cy="65" 
+                        r="56" 
+                        stroke-width="8" 
+                        fill="none"
+                        stroke-dasharray="351.86"
+                        stroke-dashoffset="351.86"
+                        style="stroke: {% if resolution_percentage >= 80 %}#00ff9c{% elif resolution_percentage >= 60 %}#ffd60a{% else %}#ff4d6d{% endif %}; 
+                               transition: stroke-dashoffset 1.5s ease-in-out;">
+                </circle>
+            </svg>
+            <div class="pr-text">
+                <span class="pr-pct" id="mainPct">0%</span>
+                <span class="pr-lbl">Resolved</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:var(--green-dim);color:var(--green)">
+                <i class="fa-solid fa-file-circle-exclamation"></i>
+            </div>
+            <div class="stat-val">{{ total_complaints|default:0 }}</div>
+            <div class="stat-lbl">Total Complaints</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background:var(--gold-dim);color:var(--gold)">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+            <div class="stat-val">{{ open_complaints|default:0 }}</div>
+            <div class="stat-lbl">Open Complaints</div>
+            
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(0,194,255,0.15);color:var(--blue)">
+                <i class="fa-solid fa-check-circle"></i>
+            </div>
+            <div class="stat-val">{{ resolved_this_month|default:0 }}</div>
+            <div class="stat-lbl">Resolved This Month</div>
+            
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(168,85,247,0.15);color:var(--purple)">
+                <i class="fa-solid fa-chart-bar"></i>
+            </div>
+            <div class="stat-val">{{ resolution_percentage|default:0 }}%</div>
+            <div class="stat-lbl">Resolution Rate</div>
+        </div>
+    </div>
+
+    <!-- Recent Complaints -->
+    <div class="section-hdr">
+        <div class="section-title">Recent Complaints</div>
+        <a href="{% url 'accounts:my_complaints' %}" class="btn-sm btn-outline">
+            View All <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="clearance-grid">
+        {% for complaint in recent_complaints %}
+        <div class="cl-card">
+            <div class="cl-top">
+                <div class="cl-icon"><i class="fa-solid fa-file-circle-exclamation"></i></div>
+                <span class="badge-pill 
+                    {% if complaint.status == 'resolved' %}pill-green
+                    {% elif complaint.status == 'in_progress' %}pill-gold
+                    {% else %}pill-red{% endif %}">
+                    {{ complaint.get_status_display|default:complaint.status|title }}
+                </span>
+            </div>
+            
+            <div class="cl-name">{{ complaint.title }}</div>
+            
+            <div class="cl-time">
+                <i class="fa-solid fa-tag"></i> {{ complaint.get_category_display|default:complaint.category|title }} • 
+                {{ complaint.date_submitted|timesince }} ago
+            </div>
+
+            <button class="verify-btn" 
+                    onclick="location.href='{% url 'accounts:complaint_detail' complaint.complaint_id %}'">
+                View Details
+            </button>
+        </div>
+        {% empty %}
+        <div class="card" style="grid-column: 1 / -1; text-align:center; padding:60px 20px; color:#888;">
+            <p>You haven't submitted any complaints yet.</p>
+            <a href="{% url 'accounts:submit_complaint' %}" class="btn-sm btn-green" style="margin-top:15px;">
+                Submit Your First Complaint
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Animate Progress Ring
+document.addEventListener("DOMContentLoaded", function() {
+    const percentage = {{ resolution_percentage|default:0 }};
+    const circle = document.getElementById("mainRing");
+    const percentText = document.getElementById("mainPct");
+    
+    const circumference = 351.86;
+    const offset = circumference - (circumference * percentage / 100);
+    
+    circle.style.strokeDashoffset = circumference;
+    percentText.textContent = "0%";
+    
+    setTimeout(() => {
+        circle.style.strokeDashoffset = offset;
+        
+        let current = 0;
+        const increment = percentage / 50;
+        
+        const counter = setInterval(() => {
+            current += increment;
+            if (current >= percentage) {
+                current = percentage;
+                clearInterval(counter);
+            }
+            percentText.textContent = Math.round(current) + "%";
+        }, 30);
+    }, 400);
+});
+</script>
+{% endblock %}

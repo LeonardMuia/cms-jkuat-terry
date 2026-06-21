@@ -1,0 +1,32 @@
+{% extends "accounts/base.html" %}
+
+{% block breadcrumb %}Audit Logs{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-audit">
+    
+    <div class="section-hdr">
+        <div class="section-title">Audit Logs</div>
+    </div>
+
+    <div class="card">
+        <div id="auditLog">
+            {% for log in logs %}
+            <div style="padding:14px 18px; border-bottom:1px solid var(--bd);">
+                <strong style="color:var(--green);">{{ log.timestamp|date:"H:i" }}</strong> — 
+                <strong>{{ log.user }}</strong> 
+                {{ log.action }}
+                {% if log.details %}
+                <br><small style="color:var(--txt2);">{{ log.details }}</small>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div style="padding:40px; text-align:center; color:var(--txt2);">
+                No audit logs available yet.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

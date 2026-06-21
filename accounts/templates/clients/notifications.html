@@ -1,0 +1,47 @@
+{% extends "clients/base.html" %}
+{% block breadcrumb %}Notifications{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-notifications">
+
+    <div class="section-hdr">
+        <div class="section-title">Notifications</div>
+        {% if notifications %}
+        <button class="btn-sm btn-green" onclick="markAllAsRead()">
+            Mark All as Read
+        </button>
+        {% endif %}
+    </div>
+
+    <div class="notifications-container">
+        {% for notif in notifications %}
+        <div class="notif-item {% if not notif.is_read %}unread{% endif %}">
+            <div class="notif-content">
+                <div class="ni-icon">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                
+                <div class="ni-body">
+                    <div class="ni-title">{{ notif.title }}</div>
+                    <div class="ni-message">{{ notif.message }}</div>
+                    <div class="ni-time">{{ notif.created_at|timesince }} ago</div>
+                </div>
+            </div>
+            
+            {% if not notif.is_read %}
+            <div class="unread-dot"></div>
+            {% endif %}
+        </div>
+        {% empty %}
+        
+        <!-- Empty State -->
+        <div class="empty-notifications">
+            <i class="fa-solid fa-bell-slash fa-4x"></i>
+            <h3>All Caught Up!</h3>
+            <p>You don't have any notifications at the moment.</p>
+        </div>
+        
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

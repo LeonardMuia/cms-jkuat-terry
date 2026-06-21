@@ -1,0 +1,80 @@
+{% extends "clients/base.html" %}
+{% block breadcrumb %}Submit Complaint{% endblock %}
+{% block content %}
+<div class="page-wrap active" id="page-submit">
+  <div class="section-hdr">
+    <div class="section-title">Submit New Complaint</div>
+  </div>
+
+  <div class="card" style="max-width: 720px; margin: 0 auto">
+    <p style="margin-bottom: 20px; color: var(--txt2)">
+      Fill the form below to register your complaint. All fields marked * are
+      required.
+    </p>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+        <div class="form-group">
+          <label class="form-label">Complaint Category *</label>
+          <select name="category" class="form-input" required>
+            <option value="">Select Category</option>
+            <option value="academic">Academic Services</option>
+            <option value="ict">ICT & Infrastructure</option>
+            <option value="hostel">Hostel & Accommodation</option>
+            <option value="finance">Finance & Fees</option>
+            <option value="library">Library Services</option>
+            <option value="health">Health & Wellness</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Department / Faculty *</label>
+          <select name="department" class="form-input" required>
+            <option value="">Select Department</option>
+            {% for dept in departments %}
+            <option value="{{ dept.id }}">{{ dept.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Subject / Title *</label>
+        <input
+          type="text"
+          name="title"
+          class="form-input"
+          placeholder="e.g., Faulty Wi-Fi in Lecture Hall B"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Detailed Description *</label>
+        <textarea
+          name="description"
+          class="form-input"
+          rows="6"
+          placeholder="Please describe your complaint in detail..."
+          required
+        ></textarea>
+      </div>
+
+      <div class="form-actions" style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px;">
+        <button type="button" class="btn-sm btn-outline" onclick="history.back()" style="padding: 12px 25px;">
+            Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn-sm btn-green"
+          style="padding: 12px 35px; font-size: 15px; font-weight: 600;"
+        >
+          <i class="fa-solid fa-paper-plane" style="margin-right: 8px;"></i> Submit Complaint
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

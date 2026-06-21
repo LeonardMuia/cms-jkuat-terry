@@ -1,0 +1,43 @@
+{% extends "accounts/base.html" %}
+
+{% block breadcrumb %}Settings{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-settings">
+    
+    <div class="section-hdr">
+        <div class="section-title">System Settings</div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom:20px; color:var(--green);">Notification Settings</h3>
+        
+        <div style="margin:20px 0;">
+            <label style="display:block; margin:12px 0; font-size:14px;">
+                <input type="checkbox" checked style="margin-right:10px;"> 
+                Email notifications for new complaints
+            </label>
+            <label style="display:block; margin:12px 0; font-size:14px;">
+                <input type="checkbox" checked style="margin-right:10px;"> 
+                Daily summary report to administrators
+            </label>
+            <label style="display:block; margin:12px 0; font-size:14px;">
+                <input type="checkbox" checked style="margin-right:10px;"> 
+                Notify officers when complaint is assigned
+            </label>
+        </div>
+
+        <button class="btn-sm btn-green" onclick="showToast('✅ Settings saved successfully!')">
+            Save Changes
+        </button>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h3 style="margin-bottom:15px; color:var(--green);">System Information</h3>
+        <p><strong>Total Users:</strong> {{ total_users|default:"—" }}</p>
+        <p><strong>Total Complaints:</strong> {{ total_complaints|default:"—" }}</p>
+        <p><strong>Database Status:</strong> <span style="color:var(--green);">Healthy</span></p>
+    </div>
+
+</div>
+{% endblock %}

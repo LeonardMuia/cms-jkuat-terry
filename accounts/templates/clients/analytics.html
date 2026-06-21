@@ -1,0 +1,95 @@
+{% extends "clients/base.html" %}
+{% block breadcrumb %}Analytics & Reports{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-analytics">
+
+    <div class="section-hdr">
+        <div class="section-title">Analytics & Reports</div>
+        <p class="section-subtitle">Overview of your complaints • Last 6 months</p>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <h3>Total Complaints</h3>
+            <h2>{{ total_complaints }}</h2>
+        </div>
+        <div class="stat-card">
+            <h3>Resolved</h3>
+            <h2 style="color: var(--green);">{{ resolved }}</h2>
+            <small>{{ resolution_rate }}% Resolution Rate</small>
+        </div>
+        <div class="stat-card">
+            <h3>In Progress</h3>
+            <h2 style="color: var(--gold);">{{ in_progress }}</h2>
+        </div>
+        <div class="stat-card">
+            <h3>Pending</h3>
+            <h2 style="color: var(--red);">{{ pending }}</h2>
+        </div>
+    </div>
+
+    <div class="analytics-grid">
+        <!-- Trend Chart -->
+        <div class="card">
+            <h3>My Complaints Trend (Last 6 Months)</h3>
+            <div style="height: 320px;">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Status Breakdown -->
+        <div class="card">
+            <h3>Status Breakdown</h3>
+            <div style="height: 320px;">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+// Trend Chart
+new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+        labels: {{ labels|safe }},
+        datasets: [{
+            label: 'Complaints Submitted',
+            data: {{ trend_values|safe }},
+            borderColor: '#00d67f',
+            backgroundColor: 'rgba(0, 214, 127, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+    }
+});
+
+// Status Doughnut Chart
+new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Pending', 'In Progress', 'Resolved'],
+        datasets: [{
+            data: [{{ pending }}, {{ in_progress }}, {{ resolved }}],
+            backgroundColor: ['#ff4d6d', '#f2c94c', '#00d67f'],
+            borderWidth: 3
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%'
+    }
+});
+</script>
+{% endblock %}

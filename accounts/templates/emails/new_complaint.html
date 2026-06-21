@@ -1,0 +1,30 @@
+{% extends "emails/base_email.html" %}
+
+{% block message %}
+A new complaint has been filed and assigned within the system. You are receiving this because you are an assigned officer or a system administrator.
+{% endblock %}
+
+{% block data_card %}
+<div class="info-card">
+    <div class="info-row">
+        <span class="info-label">Complaint ID:</span>
+        <span class="info-value">{{ complaint.complaint_id }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Title:</span>
+        <span class="info-value">{{ complaint.title }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Category:</span>
+        <span class="info-value">{{ complaint.get_category_display }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Complainant:</span>
+        <span class="info-value">{{ complaint.complainant.get_full_name|default:complaint.complainant.username }}</span>
+    </div>
+    <div class="info-row" style="margin-top: 15px; border-top: 1px solid #e5e7eb; padding-top: 10px;">
+        <span class="info-label">Description:</span><br>
+        <div style="font-size: 14px; color: #4b5563; margin-top: 5px;">{{ complaint.description }}</div>
+    </div>
+</div>
+{% endblock %}

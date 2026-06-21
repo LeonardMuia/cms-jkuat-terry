@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject }}</title>
+    <style>
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #f4f7f6;
+            padding-bottom: 40px;
+        }
+        .main-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-top: 40px;
+        }
+        .header {
+            background-color: #00d67f;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header-logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1px;
+            text-decoration: none;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .greeting {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #0a2f1f;
+        }
+        .message-body {
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        .info-card {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #00d67f;
+        }
+        .info-row {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .info-label {
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-size: 11px;
+            display: inline-block;
+            width: 120px;
+        }
+        .info-value {
+            color: #111827;
+            font-weight: 500;
+        }
+        .cta-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #00d67f;
+            color: #ffffff !important;
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0, 214, 127, 0.3);
+        }
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+        .footer a {
+            color: #00d67f;
+            text-decoration: none;
+        }
+        @media only screen and (max-width: 600px) {
+            .main-container {
+                margin-top: 0;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="main-container">
+            <div class="header">
+                <div class="header-logo">JKUAT CMS</div>
+            </div>
+            <div class="content">
+                <div class="greeting">Hello,</div>
+                <div class="message-body">
+                    {% block message %}{% endblock %}
+                </div>
+                
+                {% block data_card %}{% endblock %}
+
+                <div class="cta-container">
+                    <a href="{{ site_url }}" class="button">Log in to Portal</a>
+                </div>
+            </div>
+            <div class="footer">
+                <p>This is an automated notification from the JKUAT Complaint Management System.</p>
+                <p>© {{ year }} Jomo Kenyatta University of Agriculture and Technology</p>
+                <p><a href="{{ site_url }}">Manage your notifications</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

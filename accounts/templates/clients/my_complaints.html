@@ -1,0 +1,45 @@
+{% extends "clients/base.html" %}
+
+{% block breadcrumb %}My Complaints{% endblock %}
+
+{% block content %}
+<div class="page-wrap active" id="page-mycomplaints">
+    
+    <div class="section-hdr">
+        <div class="section-title">My Complaints</div>
+    </div>
+
+    <div class="doc-grid">
+        {% for complaint in complaints %}
+        <div class="doc-card">
+            <div class="doc-icon" style="background: 
+                {% if complaint.status == 'resolved' %}var(--green-dim)
+                {% elif complaint.status == 'in_progress' %}var(--gold-dim)
+                {% else %}var(--gold-dim){% endif %}">
+                <i class="fa-solid fa-file-circle-exclamation"></i>
+            </div>
+            <div>
+                <div class="doc-name">{{ complaint.complaint_id }} — {{ complaint.title }}</div>
+                <div class="doc-size">{{ complaint.category }} • {{ complaint.date_submitted|timesince }} ago</div>
+                <span class="badge-pill 
+                    {% if complaint.status == 'resolved' %}pill-green
+                    {% elif complaint.status == 'in_progress' %}pill-gold
+                    {% else %}pill-red{% endif %}">
+                    {{ complaint.get_status_display|default:complaint.status|title }}
+                </span>
+            </div>
+            <div class="doc-actions">
+    <a href="{% url 'accounts:detail' complaint.id %}" class="doc-btn">Track</a>
+</div>
+        </div>
+        {% empty %}
+        <div class="card" style="grid-column: 1 / -1; text-align:center; padding:60px;">
+            <p>You have not submitted any complaints yet.</p>
+            <a href="" class="btn-sm btn-green" style="margin-top:15px;">
+                Submit Your First Complaint
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

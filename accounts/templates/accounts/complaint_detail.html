@@ -1,0 +1,120 @@
+{% extends "accounts/base.html" %}
+
+{% block breadcrumb %}Complaint Details{% endblock %}
+
+{% block content %}
+<div class="page-wrap active">
+
+    <div class="section-hdr">
+        <div class="section-title">
+            Complaint #{{ complaint.complaint_id }}
+        </div>
+        <a href="{% url 'accounts:dean_complaints' %}" class="btn-sm btn-outline">
+            ← Back to All Complaints
+        </a>
+    </div>
+
+    <div class="card">
+
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 25px;">
+            <div>
+                <h2 style="margin: 0 0 8px 0; color: var(--txt);">{{ complaint.title }}</h2>
+                <p style="margin: 0; color: var(--txt2);">
+                    <strong>Category:</strong> {{ complaint.get_category_display|default:complaint.category|title }}
+                    | <strong>Priority:</strong> {{ complaint.get_priority_display|default:complaint.priority|title }}
+                </p>
+            </div>
+            <span class="badge-pill
+                {% if complaint.status == 'resolved' %}pill-green
+                {% elif complaint.status == 'in_progress' %}pill-gold
+                {% else %}pill-red{% endif %}">
+                {{ complaint.get_status_display|default:complaint.status|title }}
+            </span>
+        </div>
+
+        <!-- Description -->
+        <div style="margin-bottom: 25px;">
+            <strong style="color: var(--txt2);">Description:</strong>
+            <p style="margin-top: 8px; line-height: 1.6;">{{ complaint.description }}</p>
+        </div>
+
+        <!-- Assignment Form -->
+        <div style="background: var(--surf2); padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 12px; color: var(--green);">Assignment</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <div style="display: flex; gap: 15px; align-items: end;">
+                    <div style="flex: 1;">
+                        <label class="form-label">Assign To Officer</label>
+                        <select name="assigned_to" class="form-input">
+                            <option value="">-- Select Officer --</option>
+                            {% for officer in officers %}
+                            <option value="{{ officer.id }}"
+                                {% if complaint.assigned_to and complaint.assigned_to.id == officer.id %}selected{% endif %}>
+                                {{ officer.get_full_name|default:officer.username }}
+                                ({{ officer.profile.department|default:"No Department" }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-sm btn-green" style="padding: 11px 25px;">
+                        <i class="fa-solid fa-user-tie"></i> Assign
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Info Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+            <div>
+                <strong style="color: var(--txt2);">Submitted By:</strong><br>
+                {{ complaint.complainant.get_full_name|default:complaint.complainant.username|default:"—" }}
+            </div>
+            <div>
+                <strong style="color: var(--txt2);">Department:</strong><br>
+                {{ complaint.get_category_display|default:"—" }}
+            </div>
+            <div>
+                <strong style="color: var(--txt2);">Currently Assigned:</strong><br>
+                <strong>
+                    {{ complaint.assigned_to.username|default:"Not Assigned Yet" }}
+                </strong>
+            </div>
+            <div>
+                <strong style="color: var(--txt2);">Submitted On:</strong><br>
+                {{ complaint.date_submitted|date:"d M Y - H:i" }}
+            </div>
+        </div>
+
+        <!-- Update History -->
+        <h3 style="margin: 30px 0 15px 0; color: var(--green);">Update History</h3>
+        <div class="clearance-timeline">
+            {% for update in updates %}
+            <div class="ct-step">
+                <div class="ct-dot
+                    {% if update.new_status == 'resolved' %}done
+                    {% elif update.new_status == 'in_progress' %}pending
+                    {% else %}locked{% endif %}">
+                </div>
+                <div class="ct-body">
+                    <div class="ct-dept">{{ update.new_status|title }}</div>
+                    <div class="ct-meta">
+                        {{ update.date|date:"d M Y - H:i" }} by 
+                        <strong>{{ update.updated_by.get_full_name|default:update.updated_by.username }}</strong>
+                    </div>
+                    {% if update.comment %}
+                    <p style="margin-top: 10px; color: var(--txt2);">{{ update.comment }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div style="padding: 30px; text-align: center; color: var(--txt2); background: var(--surf2); border-radius: 12px;">
+                No updates recorded yet.
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}
