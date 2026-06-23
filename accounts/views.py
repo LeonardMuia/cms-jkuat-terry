@@ -979,7 +979,7 @@ from django.http import JsonResponse
 @login_required
 def get_notifications_ajax(request):
     notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')[:10]
-    unread_count = notifications.filter(is_read=False).count()
+    unread_count = Notification.objects.filter(recipient=request.user, is_read=False).count()
     
     notif_data = []
     for n in notifications:
